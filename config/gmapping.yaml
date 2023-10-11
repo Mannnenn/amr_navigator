@@ -1,0 +1,6 @@
+map_update_interval: 0.5
+temporalUpdate: 1.0
+xmin: -100
+xmax: 100
+ymin: -100
+ymax: 100
