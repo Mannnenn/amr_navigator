@@ -22,11 +22,13 @@
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
 
 
-  <node name="odom_to_pose" pkg="amr_navigator" type="odom_to_pose" output="screen"/>
+  <node name="load_waypoints" pkg="amr_navigator" type="load_waypoints.py" output="screen"/>
 
   <node pkg="tf" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 map odom 100"/>
+  <param name="waypoints_path" value="$(find amr_navigator)/path/waypoints.txt"/>
 
   <node name="init_pose" pkg="amr_navigator" type="init_pose.py" output="screen"/>
+  
 
 
 </launch>
