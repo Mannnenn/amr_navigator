@@ -18,6 +18,8 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   tf2
   tf2_ros
+  visualization_msgs
+  nav_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -126,6 +128,21 @@ include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
 )
+
+include_directories(include)
+
+add_executable(odom_to_pose src/odom_to_pose.cpp)
+
+target_link_libraries(odom_to_pose
+  ${catkin_LIBRARIES}
+)
+
+add_executable(waypoint_recorder src/waypoint_recorder.cpp)
+
+target_link_libraries(waypoint_recorder
+  ${catkin_LIBRARIES}
+)
+
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
