@@ -2,8 +2,6 @@
 <launch>
 
   <arg name="gui" default="true" />
-  <node pkg="tf" type="static_transform_publisher" name="velodyne" args="0 0 0 0 0 0 body velodyne 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="laser" args="0 0 0 0 0 0 body laser 100"/>
 
 
   <node name="pointcloud_to_laserscan" pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" output="screen">
@@ -12,6 +10,5 @@
   </node>
 
   <arg name="rvizconfig" default="$(find amr_navigator)/rviz/map.rviz" />
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
 
 </launch>
