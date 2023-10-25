@@ -9,6 +9,6 @@
 #include <fstream>
 #include <sstream>
 
-void waypoint_recorder(std::string sub="/ndt_pose", std::string file_name="./waypoints.txt", double interval=1);
+void waypoint_recorder(std::string sub="/ndt_pose", std::string file_name="./waypoints.txt", double interval=0.25);
 
 #endif // WAYPOINT_RECORDER_HPP

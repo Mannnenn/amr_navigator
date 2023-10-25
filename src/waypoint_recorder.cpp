@@ -81,6 +81,12 @@ void waypoint_recorder(std::string sub, std::string file_name, double interval) 
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "waypoint_recorder", ros::init_options::AnonymousName);
-    waypoint_recorder("/pose", "./waypoints.txt", 1);
+    std::string waypoint_path;
+    ros::NodeHandle nh;
+
+    if (!nh.getParam("waypoint_path", waypoint_path))
+        { ROS_ERROR("No waypoint_path param"); }
+
+    waypoint_recorder("/pose", "./waypoints.txt", 0.25);
     return 0;
 }

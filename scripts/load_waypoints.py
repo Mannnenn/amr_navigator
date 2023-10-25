@@ -20,7 +20,7 @@ def load_waypoints(waypoints_path):
     waypoints_info.header.frame_id = 'map'
     waypoints_info.header.stamp = rospy.Time.now()
 
-    for idx in range(len(waypoints)-1):
+    for idx in range(len(waypoints)):
         pose = PoseStamped()
         pose.header.frame_id = 'map'
         pose.pose.position = Point(waypoints[idx][0], waypoints[idx][1], waypoints[idx][2])
