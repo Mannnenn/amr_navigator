@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<launch>
+
+  <include file="$(find amr_hw_control)/launch/free_move.launch" />
+  <node name="init_pose" pkg="amr_navigator" type="init_pose.py" output="screen"/>
+
+  <include file="$(find livox_ros_driver2)/launch_ROS1/msg_MID360.launch" />
+  <node name="livox_to_pointcloud2" pkg="livox_to_pointcloud2" type="livox_to_pointcloud2_node" output="screen"/>
+
+
+  <node name="pointcloud_to_laserscan" pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" output="screen">
+    <remap from="cloud_in" to="/livox/points"/>
+    <rosparam command="load" file="$(find amr_navigator)/config/point_livox.yaml"/>
+  </node>
+
+
+  <include file="$(find slam_toolbox)/online_async.launch" />
+
+  <include file="$(find fast_lio)/launch/mapping_mid360.launch" />
+  <node pkg="tf" type="static_transform_publisher" name="map_to_camera_init" args="0 0 0 0 0 0  map camera_init 100"/>
+
+
+  <arg name="gui" default="true" />
+  <arg name="rvizconfig" default="$(find amr_navigator)/rviz/livox.rviz" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+
+</launch>

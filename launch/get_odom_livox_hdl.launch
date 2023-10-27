@@ -1,26 +1,20 @@
 <launch>
 
-  <include file="$(find amr_hw_control)/launch/auto_move.launch"/>
-
+  <include file="$(find amr_hw_control)/launch/joy_manual.launch"/>
   <node name="odom_to_pose" pkg="amr_navigator" type="odom_to_pose" output="screen"/>
-
-  <param name="waypoints_path" value="$(find amr_navigator)/path/waypoints.txt"/>
-  <node name="load_waypoints" pkg="amr_navigator" type="load_waypoints.py" output="screen"/>
 
 
   <include file="$(find livox_ros_driver2)/launch_ROS1/msg_MID360_PC2.launch" />
   <include file="$(find hdl_localization)/launch/hdl_livox.launch" />
 
 
-
   <arg name="map_file" default="$(find amr_navigator)/data/map.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/>
+
 
   <arg name="gui" default="true" />
   <param name="use_gui" value="$(arg gui)"/>
   <arg name="rvizconfig" default="$(find amr_navigator)/rviz/hdl_localization.rviz" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
-
-
 
 </launch>
