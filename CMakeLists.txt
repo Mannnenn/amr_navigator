@@ -20,7 +20,8 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   visualization_msgs
   nav_msgs
-  sound_play
+  gx_sound_player
+  costmap_2d
 )
 
 ## System dependencies are found with CMake's conventions
@@ -144,7 +145,17 @@ target_link_libraries(waypoint_recorder
   ${catkin_LIBRARIES}
 )
 
+add_executable(costmap_load src/costmap_load.cpp)
 
+target_link_libraries(costmap_load
+  ${catkin_LIBRARIES}
+)
+
+add_executable(path_check src/check_path.cpp)
+
+target_link_libraries(path_check
+  ${catkin_LIBRARIES}
+)
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/amr_navigator.cpp

@@ -60,6 +60,8 @@
   <build_depend>tf2_ros</build_depend>
   <build_depend>visualization_msgs</build_depend>
   <build_depend>nav_msgs</build_depend>
+  <build_depend>gx_sound_player</build_depend>
+  <build_depend>costmap_2d</build_depend>
 
   <build_export_depend>geometry_msgs</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
@@ -71,6 +73,8 @@
   <build_export_depend>tf2_ros</build_export_depend>
   <build_export_depend>visualization_msgs</build_export_depend>
   <build_export_depend>nav_msgs</build_export_depend>
+  <build_export_depend>gx_sound_player</build_export_depend>
+  <build_export_depend>costmap_2d</build_export_depend>
 
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>message_runtime</exec_depend>
@@ -83,6 +87,8 @@
   <exec_depend>tf2_ros</exec_depend>
   <exec_depend>visualization_msgs</exec_depend>
   <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>gx_sound_player</exec_depend>
+  <exec_depend>costmap_2d</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
