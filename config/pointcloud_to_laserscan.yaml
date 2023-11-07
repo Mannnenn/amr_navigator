@@ -5,5 +5,5 @@ angle_max: 3.14
 angle_increment: 0.004
 scan_time: 0.050
 range_min: 0.5
-range_max: 20
+range_max: 200
 concurrency_level: 0

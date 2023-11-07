@@ -20,6 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   visualization_msgs
   nav_msgs
+  sound_play
 )
 
 ## System dependencies are found with CMake's conventions

@@ -1,0 +1,26 @@
+<launch>
+  <arg name="port" default="/dev/ttyACM0" />
+  <arg name="frame_id" default="imu_link" />
+  <node pkg="rt_usb_9axisimu_driver" type="rt_usb_9axisimu_driver" name="rt_usb_9axisimu_driver" required="true" output="screen">
+    <param name="port" value="$(arg port)" />
+    <param name="frame_id" value="$(arg frame_id)" />
+  </node>
+
+
+<!--
+  <node pkg="imu_transformer" type="imu_transformer_node" name="imu_transformer">
+    <remap from="imu_in/data" to="/imu/data_raw"/>
+    <remap from="imu_in/mag" to="/imu/mag"/>
+    <remap from="imu_out" to="/imu/data_inv"/>
+    <param name="yaw_offset" value="0"/>
+    <param name="pitch_offset" value="0"/>
+    <param name="roll_offset" value="180"/>
+    <param name="target_frame" value="imu_link"/>
+  </node>
+-->
+
+  <node name="imu_filter_node" pkg="imu_filter_madgwick" type="imu_filter_node" output="screen">
+
+  </node>
+
+</launch>

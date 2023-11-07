@@ -1,0 +1,6 @@
+<launch>
+
+  <include file="$(find gx_sound_player)/launch/sound_player.launch"/>
+  <node name="sound_play" pkg="amr_navigator" type="sound_play.py" output="screen"/>
+
+</launch>
