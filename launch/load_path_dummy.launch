@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 
-  <include file="$(find amr_hw_control)/launch/joy_dummy.launch"/>
+  <include file="$(find amr_hw_control)/launch/auto_dummy.launch"/>
 
 
   <param name="waypoints_path" value="$(find amr_navigator)/path/waypoints.txt"/>

@@ -18,9 +18,10 @@
     <param name="target_frame" value="imu_link"/>
   </node>
 -->
-
+<!--
   <node name="imu_filter_node" pkg="imu_filter_madgwick" type="imu_filter_node" output="screen">
-
   </node>
+-->
+
 
 </launch>

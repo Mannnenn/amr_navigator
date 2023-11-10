@@ -18,14 +18,14 @@ def main():
     now = rospy.get_rostime()
 
     # 逆順に送信しても時刻順に再生される
-    goal1 = SoundRequestGoal(stamp=rospy.Time(secs=now.to_sec() + 3.0), file=os.path.join(base_dir, "../data/alert3.wav"))
+    goal1 = SoundRequestGoal(stamp=rospy.Time(secs=now.to_sec() + 3.0), file=os.path.join(base_dir, "../data/audio_robot.wav"))
 
     rospy.loginfo("send request")
 
     while not rospy.is_shutdown():
         # Fill in the goal here
         client.send_goal(goal1)
-        rospy.sleep(12)
+        rospy.sleep(1.5)
 
 
 

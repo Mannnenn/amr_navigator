@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "odom_to_pose");
     ros::NodeHandle nh;
 
-    ros::Subscriber odom_sub = nh.subscribe("/hweel_odom", 10, odom_callback);
+    ros::Subscriber odom_sub = nh.subscribe("/odom", 10, odom_callback);
     pose_pub = nh.advertise<geometry_msgs::PoseStamped>("/pose", 10);
 
     ros::spin();
