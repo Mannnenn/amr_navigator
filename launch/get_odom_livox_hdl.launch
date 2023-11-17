@@ -1,0 +1,34 @@
+<launch>
+
+  <include file="$(find amr_hw_control)/launch/joy_manual.launch"/>
+  <node name="odom_to_pose" pkg="amr_navigator" type="odom_to_pose" output="screen"/>
+
+
+  <include file="$(find livox_ros_driver2)/launch_ROS1/msg_MID360_PC2.launch" />
+  <include file="$(find hdl_localization)/launch/hdl_livox.launch" />
+
+
+
+  <include file="$(find amr_navigator)/launch/imu.launch" />
+  <node name="imu_transformer" pkg="imu_transformer" type="imu_transformer_node" output="screen">
+      <remap from="imu_in/data" to="/imu/data_raw"/>
+      <remap from="imu_out/data" to="imu/data_base"/>
+      <param name="target_frame" value="base_link"/>
+  </node>
+
+
+
+  <arg name="map_file" default="$(find amr_navigator)/data/map.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/>
+  <rosparam file="$(find amr_navigator)/config/costmap_params.yaml" command="load"/>
+  <node name="costamp_load" pkg="amr_navigator" type="costmap_load" output="screen"/>
+
+  <node name="draw_line" pkg="amr_navigator" type="draw_line.py" output="screen"/>
+
+
+  <arg name="gui" default="true" />
+  <param name="use_gui" value="$(arg gui)"/>
+  <arg name="rvizconfig" default="$(find amr_navigator)/rviz/hdl_localization.rviz" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+
+</launch>
