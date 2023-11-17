@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <launch>
 
-  <include file="$(find amr_hw_control)/launch/free_move.launch" />
+  <include file="$(find amr_hw_control)/launch/joy_manual.launch" />
   <node name="init_pose" pkg="amr_navigator" type="init_pose.py" output="screen"/>
 
   <include file="$(find livox_ros_driver2)/launch_ROS1/msg_MID360.launch" />
+
 
 
 
@@ -48,7 +49,8 @@
   <node pkg="fast_lio" type="fastlio_mapping" name="laserMapping" output="screen" />
 
 
-
+  <node name="draw_line" pkg="amr_navigator" type="draw_line.py" output="screen"/>
+  
 
 
 
