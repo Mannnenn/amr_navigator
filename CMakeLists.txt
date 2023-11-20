@@ -22,7 +22,17 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   gx_sound_player
   costmap_2d
+  pcl_ros
 )
+
+find_package(PCL 1.7 REQUIRED)
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
+
+message(STATUS "PCL_INCLUDE_DIRS:" ${PCL_INCLUDE_DIRS})
+message(STATUS "PCL_LIBRARY_DIRS:" ${PCL_LIBRARY_DIRS})
+message(STATUS "PCL_DEFINITIONS:" ${PCL_DEFINITIONS})
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -155,6 +165,19 @@ add_executable(path_check src/check_path.cpp)
 
 target_link_libraries(path_check
   ${catkin_LIBRARIES}
+)
+
+add_executable(save_pcd src/save_pcd.cpp)
+
+target_link_libraries(save_pcd
+${catkin_LIBRARIES}
+)
+
+add_executable(compare_pcd src/compare_pcd.cpp)
+
+target_link_libraries(compare_pcd
+${catkin_LIBRARIES}
+${PCL_LIBRARY_DIRS}
 )
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
