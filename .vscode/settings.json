@@ -6,6 +6,9 @@
     "initializer_list": "cpp",
     "utility": "cpp",
     "core": "cpp",
-    "iterator": "cpp"
+    "iterator": "cpp",
+    "deque": "cpp",
+    "string": "cpp",
+    "vector": "cpp"
   }
 }

@@ -19,7 +19,7 @@
 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_map (new pcl::PointCloud<pcl::PointXYZ>);
 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_sensor (new pcl::PointCloud<pcl::PointXYZ>);
 pcl::PointCloud<pcl::PointXYZ>::Ptr cloudDiff (new pcl::PointCloud<pcl::PointXYZ>);
-pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZ> octree (0.5f);
+pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZ> octree (0.25f);
 
 ros::Publisher pub_diff_points;
 ros::Publisher pub_course_points;
@@ -158,8 +158,8 @@ void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
         // Iterate over the points in the point cloud
         for (const auto& point : cloud_diff->points)
         {
-            // Compute the Euclidean distance from the point to the origin
-            double point_distance = pcl::euclideanDistance(point, pcl::PointXYZ(0, turning_radius, 0));
+            // Compute the Euclidean distance from the point to the turning radius center
+            double radius = std::sqrt(point.x * point.x + (point.y - turning_radius) * (point.y - turning_radius));
 
             // If the distance is less than or equal to the desired distance, add the point to the filtered cloud
             if (point_distance <= outer_radius && point_distance >= inner_radius)
@@ -212,7 +212,7 @@ int main (int argc, char** argv)
     ros::init (argc, argv, "pcl_change_detector");
     ros::NodeHandle nh;
 
-    
+
     std::string pcd_file_path;
     if (!ros::param::get("pcd_file_path", pcd_file_path)) {
         ROS_ERROR("Failed to get param pcd_file_path");
@@ -225,6 +225,10 @@ int main (int argc, char** argv)
         return (-1);
     }
 
+    pcl::VoxelGrid<pcl::PointXYZ> sor;
+    sor.setInputCloud (cloud_map);
+    sor.setLeafSize (0.15f, 0.15f, 0.15f);
+    sor.filter (*cloud_map);
 
 
     pub_diff_points = nh.advertise<sensor_msgs::PointCloud2>("diff_points", 1);
