@@ -17,9 +17,7 @@
 #include <cmath>
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_map (new pcl::PointCloud<pcl::PointXYZ>);
-pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_sensor (new pcl::PointCloud<pcl::PointXYZ>);
-pcl::PointCloud<pcl::PointXYZ>::Ptr cloudDiff (new pcl::PointCloud<pcl::PointXYZ>);
-pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZ> octree (0.25f);
+pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZ> octree (0.75f);
 
 ros::Publisher pub_diff_points;
 ros::Publisher pub_course_points;
@@ -28,86 +26,32 @@ double linear_velocity = 0;
 double turning_radius = 0;
 
 
-//x, y, z coordinates
-double x;
-double y;
-double z;
 
-//quaternion
-double qx;
-double qy;
-double qz;
-double qw;
-
-void odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
-{
-    // Get the x, y, z coordinates
-    x = msg->pose.pose.position.x;
-    y = msg->pose.pose.position.y;
-    z = msg->pose.pose.position.z;
-
-    // Get the quaternion
-    qx = msg->pose.pose.orientation.x;
-    qy = msg->pose.pose.orientation.y;
-    qz = msg->pose.pose.orientation.z;
-    qw = msg->pose.pose.orientation.w;
-}
 
 void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
 {
-
-    // Create a tf listener
-    tf::TransformListener listener;
-
-    // Create a string for the target frame
-    std::string target_frame = "pcl_link";
-
-    // Wait for the transform to become available
-    listener.waitForTransform(target_frame, input->header.frame_id, ros::Time(0), ros::Duration(3.0));
-
-    // Create a new PointCloud2 message for the transformed cloud
-    sensor_msgs::PointCloud2 transformed_cloud;
-
-    // Transform the cloud
-    pcl_ros::transformPointCloud(target_frame, *input, transformed_cloud, listener);
-
-    // Create a PointCloud object
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_topic(new pcl::PointCloud<pcl::PointXYZ>);
-
     // Convert the sensor_msgs::PointCloud2 data to pcl::PointCloud
-    pcl::fromROSMsg(transformed_cloud, *cloud_topic);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::fromROSMsg(*input,*cloud_input);
 
-
-    // The translation (x, y, z)
-    Eigen::Translation3f tl(x, y, z);
-
-    // The rotation (qx, qy, qz, qw)
-    Eigen::Quaternionf qt(qx, qy, qz, qw);
-
-    // The transformation
-    Eigen::Affine3f transform = tl * qt;
-
-    // Apply the transformation to the point cloud
-    pcl::PointCloud<pcl::PointXYZ>::Ptr odom_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::transformPointCloud(*cloud_topic, *odom_cloud, transform);
+    // Create the PassThrough filter
+    pcl::PassThrough<pcl::PointXYZ> pass;
+    // Set the axis to filter along
+    pass.setFilterFieldName("z");
+    // Set the range of acceptable values
+    pass.setFilterLimits(0.0, 2.0);
 
 
 
-
-
-    pcl::VoxelGrid<pcl::PointXYZ> sor;
-    sor.setInputCloud (odom_cloud);
-    sor.setLeafSize (0.05f, 0.05f, 0.05f);
-    sor.filter (*odom_cloud);
-
-
-
+    // Set the input cloud
+    pass.setInputCloud(cloud_input);
+    pass.filter(*cloud_input);
 
     octree.setInputCloud (cloud_map);
     octree.addPointsFromInputCloud ();
     octree.switchBuffers ();  // Switch to cloud_sensor
 
-    octree.setInputCloud (odom_cloud);
+    octree.setInputCloud (cloud_input);
     octree.addPointsFromInputCloud ();
 
     std::vector<int> newPointIdxVector;
@@ -115,7 +59,7 @@ void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_diff (new pcl::PointCloud<pcl::PointXYZ>);
     for (size_t i = 0; i < newPointIdxVector.size (); ++i)
-        cloud_diff->points.push_back(odom_cloud->points[newPointIdxVector[i]]);
+        cloud_diff->points.push_back(cloud_input->points[newPointIdxVector[i]]);
 
     cloud_diff->width = cloud_diff->points.size();
     cloud_diff->height = 1;
@@ -159,7 +103,7 @@ void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
         for (const auto& point : cloud_diff->points)
         {
             // Compute the Euclidean distance from the point to the turning radius center
-            double radius = std::sqrt(point.x * point.x + (point.y - turning_radius) * (point.y - turning_radius));
+            double point_distance = std::sqrt(point.x * point.x + (point.y - turning_radius) * (point.y - turning_radius));
 
             // If the distance is less than or equal to the desired distance, add the point to the filtered cloud
             if (point_distance <= outer_radius && point_distance >= inner_radius)
@@ -227,16 +171,15 @@ int main (int argc, char** argv)
 
     pcl::VoxelGrid<pcl::PointXYZ> sor;
     sor.setInputCloud (cloud_map);
-    sor.setLeafSize (0.15f, 0.15f, 0.15f);
+    sor.setLeafSize (0.5f, 0.5f, 0.5f);
     sor.filter (*cloud_map);
 
 
     pub_diff_points = nh.advertise<sensor_msgs::PointCloud2>("diff_points", 1);
     pub_course_points = nh.advertise<sensor_msgs::PointCloud2>("course_points", 1);
-    ros::Subscriber sub_points = nh.subscribe ("/livox/lidar", 1, cloudCB);
+    ros::Subscriber sub_points = nh.subscribe ("/aligned_points", 1, cloudCB);
     ros::Subscriber sub_linear = nh.subscribe ("/linear_velocity", 1, linearCB);
     ros::Subscriber sub_turning = nh.subscribe ("/turning_radius", 1, turningCB);
-    ros::Subscriber sub = nh.subscribe("/odom", 1000, odomCallback);
     ros::spin ();
 
     return 0;
