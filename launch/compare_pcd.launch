@@ -1,12 +1,15 @@
 <?xml version="1.0"?>
 <launch>
-    <include file="$(find amr_navigator)/launch/record_path_dummy.launch"/>
 
-    <include file="$(find livox_ros_driver2)/launch_ROS1/msg_MID360_PC2.launch"/>
+
+    <!--
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find amr_navigator)/rviz/get_pcd.rviz" required="true" />
-    <param name="pcd_file_path" value="$(find amr_navigator)/PCD/map.pcd" />
+
+    -->
+
+
+    <param name="pcd_file_path" value="$(find hdl_localization)/data/inside_4.pcd" />
     <param name="target_frame" value="base_link" />
 
     <node name="compare_pcd" pkg="amr_navigator" type="compare_pcd" output="screen"/>
-    <node pkg="tf" type="static_transform_publisher" name="base_link_to_camera" args="0 0 0.15 0 0.3 0 base_link camera_link 100"/>
 </launch>

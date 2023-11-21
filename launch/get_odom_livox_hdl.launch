@@ -1,6 +1,6 @@
 <launch>
 
-  <include file="$(find amr_hw_control)/launch/joy_manual.launch"/>
+  <include file="$(find amr_hw_control)/launch/free_move.launch"/>
   <node name="odom_to_pose" pkg="amr_navigator" type="odom_to_pose" output="screen"/>
 
 
@@ -18,7 +18,7 @@
 
 
 
-  <arg name="map_file" default="$(find amr_navigator)/data/map.yaml"/>
+  <arg name="map_file" default="$(find amr_navigator)/data/map2.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/>
   <rosparam file="$(find amr_navigator)/config/costmap_params.yaml" command="load"/>
   <node name="costamp_load" pkg="amr_navigator" type="costmap_load" output="screen"/>
