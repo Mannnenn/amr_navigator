@@ -181,6 +181,13 @@ ${catkin_LIBRARIES}
 ${PCL_LIBRARY_DIRS}
 ${tf_conversions_LIBRARIES}
 )
+
+add_executable(detection_close_point src/detection_close_point.cpp)
+
+target_link_libraries(detection_close_point
+${catkin_LIBRARIES}
+${PCL_LIBRARY_DIRS}
+)
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/amr_navigator.cpp

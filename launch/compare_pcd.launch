@@ -1,15 +1,9 @@
 <?xml version="1.0"?>
 <launch>
 
-
-    <!--
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find amr_navigator)/rviz/get_pcd.rviz" required="true" />
-
-    -->
-
-
     <param name="pcd_file_path" value="$(find hdl_localization)/data/room.pcd" />
     <param name="target_frame" value="base_link" />
 
     <node name="compare_pcd" pkg="amr_navigator" type="compare_pcd" output="screen"/>
+    <node name="detection_close_point" pkg="amr_navigator" type="detection_close_point" output="screen"/>
 </launch>

@@ -112,7 +112,7 @@ def main():
     global width
     global ratio
     width = 0.5
-    ratio = rospy.get_param('line_ratio',10.0) # if faster, the ratio should be smaller
+    ratio = rospy.get_param('line_ratio',8.0) # if faster, the ratio should be smaller
 
     # Subscribe to the Twist topic
     rospy.Subscriber('cmd_vel', Twist, callback)
