@@ -23,6 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
   gx_sound_player
   costmap_2d
   pcl_ros
+  tf_conversions
 )
 
 find_package(PCL 1.7 REQUIRED)
@@ -178,6 +179,7 @@ add_executable(compare_pcd src/compare_pcd.cpp)
 target_link_libraries(compare_pcd
 ${catkin_LIBRARIES}
 ${PCL_LIBRARY_DIRS}
+${tf_conversions_LIBRARIES}
 )
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}

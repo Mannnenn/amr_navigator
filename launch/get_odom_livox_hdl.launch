@@ -18,7 +18,7 @@
 
 
 
-  <arg name="map_file" default="$(find amr_navigator)/data/map2.yaml"/>
+  <arg name="map_file" default="$(find amr_navigator)/data/room.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/>
   <rosparam file="$(find amr_navigator)/config/costmap_params.yaml" command="load"/>
   <node name="costamp_load" pkg="amr_navigator" type="costmap_load" output="screen"/>

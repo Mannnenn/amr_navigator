@@ -9,6 +9,17 @@
     "iterator": "cpp",
     "deque": "cpp",
     "string": "cpp",
-    "vector": "cpp"
-  }
+    "vector": "cpp",
+    "numericaldiff": "cpp"
+  },
+  "python.autoComplete.extraPaths": [
+    "/home/robotmaster/catkin_ws/devel/lib/python3/dist-packages",
+    "/home/robotmaster/livox_ws/devel/lib/python3/dist-packages",
+    "/opt/ros/noetic/lib/python3/dist-packages"
+  ],
+  "python.analysis.extraPaths": [
+    "/home/robotmaster/catkin_ws/devel/lib/python3/dist-packages",
+    "/home/robotmaster/livox_ws/devel/lib/python3/dist-packages",
+    "/opt/ros/noetic/lib/python3/dist-packages"
+  ]
 }

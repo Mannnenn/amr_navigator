@@ -2,22 +2,26 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <std_msgs/Float32.h>
 #include <nav_msgs/Odometry.h>
+#include <tf/transform_listener.h>
+#include <tf_conversions/tf_eigen.h>
+#include <tf2_sensor_msgs/tf2_sensor_msgs.h>
+
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/octree/octree.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/crop_box.h>
-#include <Eigen/Dense>
 #include <pcl/common/distances.h>
 #include <pcl_ros/transforms.h>
-#include <tf/transform_listener.h>
-#include <tf2_sensor_msgs/tf2_sensor_msgs.h>
 #include <pcl/filters/passthrough.h>
+
+#include <Eigen/Dense>
+
 #include <cmath>
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_map (new pcl::PointCloud<pcl::PointXYZ>);
-pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZ> octree (0.75f);
+pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZ> octree (0.5f);
 
 ros::Publisher pub_diff_points;
 ros::Publisher pub_course_points;
@@ -25,11 +29,11 @@ ros::Publisher pub_course_points;
 double linear_velocity = 0;
 double turning_radius = 0;
 
-
-
+Eigen::Affine3f transform;
 
 void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
 {
+
     // Convert the sensor_msgs::PointCloud2 data to pcl::PointCloud
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg(*input,*cloud_input);
@@ -40,17 +44,14 @@ void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
     pass.setFilterFieldName("z");
     // Set the range of acceptable values
     pass.setFilterLimits(0.0, 2.0);
-
-
-
     // Set the input cloud
     pass.setInputCloud(cloud_input);
     pass.filter(*cloud_input);
 
-    octree.setInputCloud (cloud_map);
-    octree.addPointsFromInputCloud ();
-    octree.switchBuffers ();  // Switch to cloud_sensor
 
+    octree.setInputCloud (cloud_map); // Is this right code?
+    octree.addPointsFromInputCloud ();
+    octree.switchBuffers ();  // Switch to cloud_input
     octree.setInputCloud (cloud_input);
     octree.addPointsFromInputCloud ();
 
@@ -65,14 +66,22 @@ void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
     cloud_diff->height = 1;
     cloud_diff->is_dense = true;
 
+    //Publish point cloud which is removed background
     sensor_msgs::PointCloud2 output;
     pcl::toROSMsg (*cloud_diff, output);
     output.header.frame_id = "map";
     pub_diff_points.publish (output);
 
-    const double width = 0.5;
-    const double ratio = 4.0;
 
+    // Apply the transformation to the point cloud
+    pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::transformPointCloud(*cloud_diff, *transformed_cloud, transform);
+
+
+    const double width = 0.5;
+    const double ratio = 10.0;
+
+    //If robot turn, consider to ring area
     if (turning_radius != 0)
     {
         double center_angle;
@@ -90,8 +99,8 @@ void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
             boxFilter.setMin(Eigen::Vector4f(0, turning_radius, -0.1, 1.0));
             boxFilter.setMax(Eigen::Vector4f(turning_radius * std::sin(center_angle), width/2, 2.0, 1.0));
         }
-        boxFilter.setInputCloud(cloud_diff);
-        boxFilter.filter(*cloud_diff);
+        boxFilter.setInputCloud(transformed_cloud);
+        boxFilter.filter(*transformed_cloud);
 
         double inner_radius = abs(turning_radius) - width/2; // Set your desired distance
         double outer_radius = abs(turning_radius) + width/2; // Set your desired distance
@@ -100,7 +109,7 @@ void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
         pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
         // Iterate over the points in the point cloud
-        for (const auto& point : cloud_diff->points)
+        for (const auto& point : transformed_cloud->points)
         {
             // Compute the Euclidean distance from the point to the turning radius center
             double point_distance = std::sqrt(point.x * point.x + (point.y - turning_radius) * (point.y - turning_radius));
@@ -114,30 +123,31 @@ void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
 
         sensor_msgs::PointCloud2 output;
         pcl::toROSMsg(*filtered_cloud, output);
-        output.header.frame_id = "map";
+        output.header.frame_id = "base_link";
         pub_course_points.publish(output);
     }
 
-    else
+    //If robot go straight, consider to box area
     {
         pcl::PassThrough<pcl::PointXYZ> pass;
-        pass.setInputCloud (cloud_diff);
+        pass.setInputCloud (transformed_cloud);
 
         // Create the filtering object
         pcl::CropBox<pcl::PointXYZ> boxFilter;
         boxFilter.setMin(Eigen::Vector4f(0.0, -width/2, 0.0, 1.0));
         boxFilter.setMax(Eigen::Vector4f(linear_velocity*ratio, width/2, 2.0, 1.0));
-        boxFilter.setInputCloud(cloud_diff);
-        boxFilter.filter(*cloud_diff);
+        boxFilter.setInputCloud(transformed_cloud);
+        boxFilter.filter(*transformed_cloud);
 
-        pass.filter (*cloud_diff);
-        pcl::toROSMsg (*cloud_diff, output);
-        output.header.frame_id = "map";
+        pass.filter (*transformed_cloud);
+        pcl::toROSMsg (*transformed_cloud, output);
+        output.header.frame_id = "base_link";
         pub_course_points.publish (output);
     }
 
+    octree.switchBuffers ();  // Switch to cloud_???
 
-    octree.switchBuffers ();  // Switch to cloud_sensor
+
 
 }
 
@@ -149,6 +159,34 @@ void linearCB(const std_msgs::Float32::ConstPtr& msg)
 void turningCB(const std_msgs::Float32::ConstPtr& msg)
 {
     turning_radius = msg->data;
+}
+
+void timerCallback(const ros::TimerEvent&)
+{
+    // Create a TransformListener
+    tf::TransformListener listener;
+
+    // Wait for the transform to be available
+    ros::Duration(0.35).sleep();
+
+    // Get the transformation
+    tf::StampedTransform transform_tf;
+    try
+    {
+        listener.lookupTransform("base_link", "map", ros::Time(0), transform_tf);
+    }
+    catch (tf::TransformException &ex)
+    {
+        ROS_ERROR("%s",ex.what());
+        ros::Duration(0.1).sleep();
+    }
+
+    // Convert the tf::Transform to an Eigen::Affine3d
+    Eigen::Affine3d transform_d;
+    tf::transformTFToEigen(transform_tf, transform_d);
+
+    // Convert the Eigen::Affine3d to an Eigen::Affine3f
+    transform = transform_d.cast<float>();
 }
 
 int main (int argc, char** argv)
@@ -171,7 +209,7 @@ int main (int argc, char** argv)
 
     pcl::VoxelGrid<pcl::PointXYZ> sor;
     sor.setInputCloud (cloud_map);
-    sor.setLeafSize (0.5f, 0.5f, 0.5f);
+    sor.setLeafSize (0.25f, 0.25f, 0.25f);
     sor.filter (*cloud_map);
 
 
@@ -180,6 +218,7 @@ int main (int argc, char** argv)
     ros::Subscriber sub_points = nh.subscribe ("/aligned_points", 1, cloudCB);
     ros::Subscriber sub_linear = nh.subscribe ("/linear_velocity", 1, linearCB);
     ros::Subscriber sub_turning = nh.subscribe ("/turning_radius", 1, turningCB);
+    ros::Timer timer = nh.createTimer(ros::Duration(0.5), timerCallback);
     ros::spin ();
 
     return 0;
