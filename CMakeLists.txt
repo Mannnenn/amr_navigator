@@ -162,11 +162,7 @@ target_link_libraries(costmap_load
   ${catkin_LIBRARIES}
 )
 
-add_executable(path_check src/check_path.cpp)
 
-target_link_libraries(path_check
-  ${catkin_LIBRARIES}
-)
 
 add_executable(save_pcd src/save_pcd.cpp)
 

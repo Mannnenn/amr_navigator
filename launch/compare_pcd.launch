@@ -4,6 +4,6 @@
     <param name="pcd_file_path" value="$(find hdl_localization)/data/room.pcd" />
     <param name="target_frame" value="base_link" />
 
-    <node name="compare_pcd" pkg="amr_navigator" type="compare_pcd" output="screen"/>
+    <node name="compare_pcd" pkg="amr_navigator" type="inside_5.pcd" output="screen"/>
     <node name="detection_close_point" pkg="amr_navigator" type="detection_close_point" output="screen"/>
 </launch>
