@@ -49,7 +49,7 @@
   <node pkg="fast_lio" type="fastlio_mapping" name="laserMapping" output="screen" />
 
 
-  <node name="draw_line" pkg="amr_navigator" type="draw_line.py" output="screen"/>
+  <node name="draw_line" pkg="amr_navigator" type="draw_line" output="screen"/>
   
 
 

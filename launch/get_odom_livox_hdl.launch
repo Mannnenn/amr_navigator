@@ -23,7 +23,7 @@
   <rosparam file="$(find amr_navigator)/config/costmap_params.yaml" command="load"/>
   <node name="costamp_load" pkg="amr_navigator" type="costmap_load" output="screen"/>
 
-  <node name="draw_line" pkg="amr_navigator" type="draw_line.py" output="screen"/>
+  <node name="draw_line" pkg="amr_navigator" type="draw_line" output="screen"/>
 
 
   <arg name="gui" default="true" />

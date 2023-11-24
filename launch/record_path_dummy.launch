@@ -14,9 +14,8 @@
   <node name="costamp_load" pkg="amr_navigator" type="costmap_load" output="screen"/>
 
 
-  <node name="draw_line" pkg="amr_navigator" type="draw_line" output="screen">
-    <param name="line_ratio" value="8.0"/>
-  </node>
+  <node name="draw_line" pkg="amr_navigator" type="draw_line" output="screen" />
+
 
 <!--line_ratio-->
 
