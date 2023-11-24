@@ -162,12 +162,10 @@ target_link_libraries(costmap_load
   ${catkin_LIBRARIES}
 )
 
+add_executable(draw_line src/draw_line.cpp)
 
-
-add_executable(save_pcd src/save_pcd.cpp)
-
-target_link_libraries(save_pcd
-${catkin_LIBRARIES}
+target_link_libraries(draw_line
+  ${catkin_LIBRARIES}
 )
 
 add_executable(compare_pcd src/compare_pcd.cpp)

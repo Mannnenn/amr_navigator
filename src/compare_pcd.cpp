@@ -86,6 +86,7 @@ void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
     pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
     //If robot turn, consider to ring area
+    //TODO Replace sin crop box to angle crop box
     if (turning_radius != 0)
     {
         double center_angle;

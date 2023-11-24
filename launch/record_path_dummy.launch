@@ -14,16 +14,19 @@
   <node name="costamp_load" pkg="amr_navigator" type="costmap_load" output="screen"/>
 
 
-  <node name="draw_line" pkg="amr_navigator" type="draw_line.py" output="screen"/>
+  <node name="draw_line" pkg="amr_navigator" type="draw_line" output="screen">
+    <param name="line_ratio" value="8.0"/>
+  </node>
 
+<!--line_ratio-->
 
   <arg name="gui" default="true" />
   <param name="use_gui" value="$(arg gui)"/>
   <arg name="rvizconfig" value="$(find amr_navigator)/rviz/path.rviz"/>
-  <!--
+
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
-  -->
+
 
 
 
