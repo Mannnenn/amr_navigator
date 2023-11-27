@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include <std_msgs/Float32.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <tf/transform_listener.h>
 #include <tf_conversions/tf_eigen.h>
@@ -147,14 +148,10 @@ void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
     pub_course_points_num.publish(msg);
 }
 
-void linearCB(const std_msgs::Float32::ConstPtr& msg)
-{
-    linear_velocity = msg->data;
-}
-
-void turningCB(const std_msgs::Float32::ConstPtr& msg)
-{
-    turning_radius = msg->data;
+void callback(const std_msgs::Float32MultiArray::ConstPtr& msg) {
+    turning_radius = msg->data[0];
+    linear_velocity = msg->data[1];
+    // Now you can use turning_radius and linear_velocity
 }
 
 void timerCallback(const ros::TimerEvent&)
@@ -163,7 +160,7 @@ void timerCallback(const ros::TimerEvent&)
     tf::TransformListener listener;
 
     // Wait for the transform to be available
-    ros::Duration(0.4).sleep();
+    ros::Duration(0.5).sleep();
 
     // Get the transformation
     tf::StampedTransform transform_tf;
@@ -214,8 +211,7 @@ int main (int argc, char** argv)
     pub_course_points_num = nh.advertise<std_msgs::Float32>("course_points_num", 10);
 
     ros::Subscriber sub_points = nh.subscribe ("/aligned_points", 10, cloudCB);
-    ros::Subscriber sub_linear = nh.subscribe ("/linear_velocity", 20, linearCB);
-    ros::Subscriber sub_turning = nh.subscribe ("/turning_radius", 20, turningCB);
+    ros::Subscriber sub = nh.subscribe("radius_vel", 10, callback);
     ros::Timer timer = nh.createTimer(ros::Duration(0.5), timerCallback);
     ros::spin ();
 

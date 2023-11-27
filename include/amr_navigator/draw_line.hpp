@@ -7,6 +7,7 @@
 #include <geometry_msgs/PolygonStamped.h>
 #include <geometry_msgs/Point32.h>
 #include <geometry_msgs/Twist.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <cmath>
 #include <vector>
 
@@ -24,7 +25,7 @@ private:
     ros::Subscriber sub;
     ros::NodeHandle nh;
 
-    void callback(const geometry_msgs::Twist::ConstPtr& msg);
+    void callback(const std_msgs::Float32MultiArray::ConstPtr &msg);
     std::vector<geometry_msgs::Point32> define_half_circle(double linear_velocity, double turning_radius, double width, int num_points);
     std::vector<geometry_msgs::Point32> define_rectangle(double linear_velocity, double width);
 

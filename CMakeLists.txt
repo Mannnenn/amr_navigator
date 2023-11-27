@@ -182,6 +182,20 @@ target_link_libraries(detection_close_point
 ${catkin_LIBRARIES}
 ${PCL_LIBRARY_DIRS}
 )
+
+add_executable(evalute_safety src/evalute_safety.cpp)
+
+target_link_libraries(evalute_safety
+${catkin_LIBRARIES}
+)
+
+add_executable(twist_to_radius src/twist_to_radius.cpp)
+
+target_link_libraries(twist_to_radius
+${catkin_LIBRARIES}
+)
+
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/amr_navigator.cpp

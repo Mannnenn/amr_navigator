@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include <std_msgs/Float32.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <sensor_msgs/PointCloud2.h>
 
 #include <pcl_conversions/pcl_conversions.h>
@@ -60,12 +61,12 @@ void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
 
         if (turning_radius > 0) {
             // Set min and max for positive turning_radius
-            boxFilter.setMin(Eigen::Vector4f(0, -width/2, -0.1, 1.0));
+            boxFilter.setMin(Eigen::Vector4f(0, -width/2, 0.1, 1.0));
             boxFilter.setMax(Eigen::Vector4f(turning_radius * std::sin(center_angle), turning_radius, 2.0, 1.0));
         }
         else if (turning_radius < 0){
             // Set min and max for negative turning_radius
-            boxFilter.setMin(Eigen::Vector4f(0, turning_radius, -0.1, 1.0));
+            boxFilter.setMin(Eigen::Vector4f(0, turning_radius, 0.1, 1.0));
             boxFilter.setMax(Eigen::Vector4f(turning_radius * std::sin(center_angle), width/2, 2.0, 1.0));
         }
         boxFilter.setInputCloud(cloud_input);
@@ -118,14 +119,9 @@ void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
     pub_close_points_num.publish(msg);
 }
 
-void linearCB(const std_msgs::Float32::ConstPtr& msg)
-{
-    linear_velocity = msg->data;
-}
-
-void turningCB(const std_msgs::Float32::ConstPtr& msg)
-{
-    turning_radius = msg->data;
+void callback(const std_msgs::Float32MultiArray::ConstPtr& msg) {
+    turning_radius = msg->data[0];
+    linear_velocity = msg->data[1];
 }
 
 
@@ -139,8 +135,7 @@ int main (int argc, char** argv)
     pub_close_points_num = nh.advertise<std_msgs::Float32>("close_points_num", 10);
 
     ros::Subscriber sub_points = nh.subscribe ("/livox/lidar", 10, cloudCB);
-    ros::Subscriber sub_linear = nh.subscribe ("/linear_velocity", 20, linearCB);
-    ros::Subscriber sub_turning = nh.subscribe ("/turning_radius", 20, turningCB);
+    ros::Subscriber sub = nh.subscribe("radius_vel", 10, callback);
     ros::spin ();
 
     return 0;

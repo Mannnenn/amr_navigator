@@ -2,18 +2,13 @@
 
 PolygonPublisher::PolygonPublisher() : width(0.5), ratio(4.0), turning_radius(0), linear_velocity(0) {
     pub = nh.advertise<jsk_recognition_msgs::PolygonArray>("course", 1);
-    sub = nh.subscribe("cmd_vel", 1000, &PolygonPublisher::callback, this);
+    sub = nh.subscribe("radius_vel", 10, &PolygonPublisher::callback, this);
 }
 
-void PolygonPublisher::callback(const geometry_msgs::Twist::ConstPtr& msg) {
-    geometry_msgs::Twist twist = *msg;
-    if (twist.angular.z != 0) {
-        turning_radius = twist.linear.x / twist.angular.z;
-        linear_velocity = twist.linear.x;
-    } else {
-        turning_radius = 0;
-        linear_velocity = twist.linear.x;
-    }
+void PolygonPublisher::callback(const std_msgs::Float32MultiArray::ConstPtr& msg) {
+    turning_radius = msg->data[0];
+    linear_velocity = msg->data[1];
+    // Now you can use turning_radius and linear_velocity
 }
 
 std::vector<geometry_msgs::Point32> PolygonPublisher::define_half_circle(double linear_velocity, double turning_radius, double width, int num_points) {
