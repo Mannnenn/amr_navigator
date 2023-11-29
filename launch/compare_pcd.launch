@@ -14,18 +14,17 @@
         <param name="course_lim" value="20" />
     </node>
 
+    <include file="$(find pure_pursuit)/launch/pure_pursuit_node.launch">
+    </include>
 
     <!--
-    <include file="$(find pure_pursuit)/launch/pure_pursuit_node.launch">
-        <remap from="cmd_vel" to="cmd_raw"/>
-    </include>
-    -->
-    <node name="twist_to_radius" pkg="amr_navigator" type="twist_to_radius" output="screen"/>
-
     <node name="joy_pub" pkg="joy" type="joy_node" output="screen"/>
     <node name="joy_to_twist" pkg="amr_hw_control" type="joy_to_twist" output="screen">
         <remap from="cmd_vel" to="cmd_raw"/>
     </node>
+    -->
+    <node name="twist_to_radius" pkg="amr_navigator" type="twist_to_radius" output="screen"/>
+
 
 
 </launch>

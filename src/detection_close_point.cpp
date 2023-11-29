@@ -59,6 +59,8 @@ void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
 
         pcl::CropBox<pcl::PointXYZ> boxFilter;
 
+
+        //TODO: min is too small z,floor is not removed
         if (turning_radius > 0) {
             // Set min and max for positive turning_radius
             boxFilter.setMin(Eigen::Vector4f(0, -width/2, 0.1, 1.0));

@@ -4,7 +4,7 @@
 
   <node name="odom_to_pose" pkg="amr_navigator" type="odom_to_pose" output="screen"/>
 
-  <param name="waypoints_path" value="$(find amr_navigator)/path/waypoints.txt"/>
+  <param name="waypoints_path" value="$(find amr_navigator)/path/refresh.txt"/>
   <node name="load_waypoints" pkg="amr_navigator" type="load_waypoints.py" output="screen"/>
 
 

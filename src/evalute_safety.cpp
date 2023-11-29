@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
     while (ros::ok()) {
         float reduction_ratio = calculateSpeedReduction(close_points_num, course_points_num);
         cmd_vel.linear.x = cmd_raw.linear.x * reduction_ratio;
-        cmd_vel.angular.z = cmd_vel.angular.z * reduction_ratio;
+        cmd_vel.angular.z = cmd_raw.angular.z * reduction_ratio;
         cmd_vel_pub.publish(cmd_vel);
 
         ros::spinOnce();
